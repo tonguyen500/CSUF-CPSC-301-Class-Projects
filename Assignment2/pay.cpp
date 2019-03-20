@@ -1,56 +1,45 @@
+//Luan Nguyen
+//Section 1
 #include "person.cpp"
 #include<stdio.h>
 #include <iostream>
 #include <fstream>
+#include<vector>
 using namespace std;
 
-void readData(Person array[],int n)
+void readData(vector<Person> &v)
 {
 
   string lName, fName;
   float rate = 0.0 , hours = 0.0;
   ifstream inData;
   inData.open("input.txt");
-  for(int i =0; i < n; i++)
-  {
+  while(inData >> fName >> lName >> rate >> hours)
+    {
 
-    inData >> fName >> lName >> rate >> hours;
-    array[i].setFirstName(fName);
-    array[i].getFirstName();
-
-    array[i].setLastName(lName);
-    array[i].getLastName();
-
-    array[i].setPayRate(rate);
-    array[i].getPayRate();
-
-    array[i].setHoursWorked(hours);
-    array[i].getHoursWorked();
-
-  }
+      v.emplace_back(fName,lName,rate,hours);
+    }
   inData.close();
 }
 
-void writeData(Person array[], int n)
+void writeData(vector<Person> &v)
 {
 
   fstream myfile("output.txt");
   if(myfile.is_open())
   {
-    for(int i = 0; i < n; i++)
+    for(int i = 0; i < v.size(); i++)
     {
-      // myfile << array[i].firstName << " " << array[i].lastName << " "
-      // << array[i].payRate << " "<< array[i].hoursWorked << endl;
-      if(array[i].totalPay() == array[i+1].totalPay())
+      if(v[i].totalPay() == v[i+1].totalPay())
       {
-        cout << array[i].fullName() << " " << array[i].totalPay()<<endl;
-        myfile << array[i].fullName() << " " << array[i].totalPay()<<endl;
+        cout << v[i].fullName() << " " << v[i].totalPay()<<endl;
+        myfile << v[i].fullName() << " " << v[i].totalPay()<<endl;
         break;
       }
       else
       {
-        cout << array[i].fullName() << " " << array[i].totalPay()<<endl;
-        myfile << array[i].fullName() << " " << array[i].totalPay()<<endl;
+        cout << v[i].fullName() << " " << v[i].totalPay()<<endl;
+        myfile << v[i].fullName() << " " << v[i].totalPay()<<endl;
       }
     }
   }
@@ -59,10 +48,11 @@ void writeData(Person array[], int n)
 int main()
 
 {
-  int n = 20;
-  Person E[n];
-  readData(E, n);
-  writeData(E,n);
+  // int n = 20;
+  // Person E[n];
+  vector<Person> E;
+  readData(E);
+  writeData(E);
 
   return 0;
 }

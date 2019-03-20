@@ -1,9 +1,19 @@
+//Luan Nguyen
+//Section 1
 #include "person.h"
 
 using namespace std;
 
 Person::Person()
 {
+}
+
+Person::Person(string lName, string fName, float rate, float hours)
+{
+  lastName = lName;
+  firstName = fName;
+  payRate = rate;
+  hoursWorked = hours;
 }
 //getters and setters
 

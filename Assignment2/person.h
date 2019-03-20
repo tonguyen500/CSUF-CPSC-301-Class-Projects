@@ -1,3 +1,5 @@
+//Luan Nguyen
+//Section 1
 //begin person.h
 #ifndef PERSON_H
 #define PERSON_H
@@ -13,6 +15,7 @@ private:
   float hoursWorked;
 public:
   Person();
+  Person(string lName, string fName, float rate, float hours);
   void setLastName(string lName);
   string getLastName();
 

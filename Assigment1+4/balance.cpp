@@ -23,7 +23,7 @@ PERSON *readData(int & N )
     array = new PERSON[N];
 
 
-        ifstream inData;
+        ifstream inData;//hi
         inData.open("data.txt");
 
             for (int i = 0; i < N; i++)

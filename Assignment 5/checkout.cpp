@@ -1,5 +1,5 @@
-// Name
-// Section #
+// Name Luan Nguyen
+// Section #1
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -46,7 +46,7 @@ void readBooks(vector<Book *> & myBooks) {
           getline(inData, cat);
           // cout << cat <<endl;
           getline(inData, garbage); //get rid of new blank line
-          myBooks.emplace_back(new Book(id,bookName,auth,cat));
+          myBooks.push_back(new Book(id,bookName,auth,cat));
       }
       // for(int i = 0; i<myBooks.size();i++)
       // {
@@ -67,7 +67,7 @@ int readPersons(vector<Person *> & myCardholders)
   while(inData >> cardNo >> act >> fName >> lName)
     {
 
-      myCardholders.emplace_back(new Person(cardNo,act,fName,lName));
+      myCardholders.push_back(new Person(cardNo,act,fName,lName));
     }
     // for(int i = 0; i<myCardholders.size();i++)
     // {
@@ -76,7 +76,7 @@ int readPersons(vector<Person *> & myCardholders)
   id = myCardholders.back()->getId();
   return id;
 
-  inData.close();
+
 }
 
 void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders) {
@@ -102,7 +102,6 @@ void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders) {
       }
     }
 
-  inData.close();
 }
 
 void checkoutBooks(vector<Book *> & myBooks, vector<Person *> & myCardholders) {
@@ -122,15 +121,16 @@ void checkoutBooks(vector<Book *> & myBooks, vector<Person *> & myCardholders) {
       //CHECK IF BOOK IS THERE
       cout<<"Please enter the book ID: ";
       cin >> bookID;
-      for (int i = 0; i < myBooks.size(); i++)
+      for (int j = 0; j < myBooks.size(); j++)
       {
-        if(bookID == myBooks.at(i)->getId())
+        if(bookID == myBooks.at(j)->getId())
         {
           bidfound = true;
-          cout << "Title: " << myBooks.at(i)->getTitle() << endl;
+          cout << "Title: " << myBooks.at(j)->getTitle() << endl;
           //CHECK IS BOOK IS RENTED
-          if(myBooks.at(i) ->getPersonPtr() == nullptr)
+          if(myBooks.at(j) ->getPersonPtr() == nullptr)
           {
+            myBooks.at(j)->setPersonPtr(myCardholders.at(i));
             cout << "Rental Completed" <<endl;
           }
           else
@@ -219,38 +219,31 @@ void searchRentals(vector<Book *> myBooks,vector<Person*> myCardholders) {
     cout <<"No available books";
   }
 }
-void searchRentalsPerson(vector<Book *> & myBooks, vector<Person *> myCardholders, int id) {
-  bool idfound = false;
-  bool rfound = false;
+void searchRentalsPerson(vector<Book*> myBooks, int id) {
 
-  for (int i = 0; i < myCardholders.size(); i++)
-  {
-    if(id == myCardholders.at(i)->getId())
-    {
-      idfound = true;
-      cout << "Cardholder: " << myCardholders.at(i)->fullName() << endl;
-      cout << endl;
-
-      for(int j = 0; j < myBooks.size();j++)
-      {
-        if(myBooks.at(j)->getPersonPtr() == myCardholders.at(i))
+       for(int i = 0; i < myBooks.size();i++)
+       {
+         if(myBooks.at(i)->getPersonPtr() != nullptr)
+         {
+        if(myBooks.at(i)->getPersonPtr()->getId() == id)
         {
-          rfound = true;
-          cout << "Book ID: " << myBooks.at(j)->getId() << endl;
-          cout << "Title: " << myBooks.at(j)->getTitle() << endl;
-          cout << "Author: " << myBooks.at(j)->getAuthor() << endl;
+          cout << "Book ID: " << myBooks.at(i)->getId() << endl;
+          cout << "Title: " << myBooks.at(i)->getTitle() << endl;
+          cout << "Author: " << myBooks.at(i)->getAuthor() << endl;
         }
-      }
-      if(rfound == false)
-      {
-        cout <<"No books currently checked out";
-      }
-    }
-  }
-  if(idfound == false)
-  {
-    cout <<"Card ID not found";
-  }
+       }
+     }
+
+
+
+  // if(rfound == false)
+  // {
+  //   cout <<"No books currently checked out";
+  // }
+  // if(idfound == false)
+  // {
+  //   cout <<"Card ID not found";
+  // }
 
 }
 
@@ -284,23 +277,27 @@ int closeCard(vector<Person *> & myCardholders, int id)
         cout << "Card ID deactivated";
         break;
       }
-      else if (choice == 'n')
+      if (choice == 'n')
       {
         cout << "ok";
+        break;
       }
       else
       {
         cout << "Invalid choice";
       }
     }
-    else
-    {
-    if(id == myCardholders.at(i)->getId() && myCardholders.at(i)->isActive() == true)
+    else {
+
+       if(id == myCardholders.at(i)->getId() && myCardholders.at(i)->isActive() == false)
       {
+        idfound = true;
         cout << "Cardholder: " << myCardholders.at(i)->fullName() << endl;
         cout << "Card ID is already inactive";
+        break;
       }
-}
+
+    }
   }
   if(idfound == false)
     {
@@ -308,6 +305,53 @@ int closeCard(vector<Person *> & myCardholders, int id)
     }
 }
 
+void updateRecords(vector<Person*> &v,vector<Book*> &v2 )
+{
+
+    cout <<v.size() <<endl;
+    cout << v2.size()<<endl;
+
+  fstream myfile("persons.txt");
+  if (myfile.is_open())
+  {
+    for(int i = 0; i <v.size(); i++)
+    {
+      myfile << v.at(i)->getId() << " " << v.at(i)->isActive() << " "
+      << v.at(i)->fullName()<<endl;
+
+    }
+  }
+  myfile.close();
+
+  fstream myfile2("rentals.txt");
+  if (myfile2.is_open())
+  {
+    bool avail = false;
+    for (int j = 0; j < v2.size(); j++)
+    {
+      if(v2.at(j)->getPersonPtr() != nullptr)
+      {
+      myfile2 << v2.at(j)->getId() << " " << v2.at(j)->getPersonPtr()->getId() << endl;
+    }
+  }
+
+}
+myfile2.close();
+}
+
+Person* search(vector<Person*> &myCardholders, int id)
+{
+  for (int i = 0; i < myCardholders.size(); i++)
+  {
+    if(id == myCardholders.at(i)->getId())
+    {
+      cout << "Cardholder: " << myCardholders.at(i)->fullName() << endl;
+      cout << endl;
+      return myCardholders.at(i);
+    }
+  }
+  return nullptr;
+}
 
 
 int main()
@@ -323,9 +367,10 @@ int main()
     vector<Book *> books;
     vector<Person *> cardholders;
     readBooks(books);
-    readPersons(cardholders);
-    readRentals(books,cardholders);
     int uniqid = readPersons(cardholders);
+    //readPersons(cardholders);
+    readRentals(books,cardholders);
+
     void printMenu();
 
     int choice;
@@ -364,7 +409,10 @@ int main()
                 // View outstanding rentals for a cardholder
                 cout<<"Please enter the card ID: ";
                 cin >> cardID;
-                searchRentalsPerson(books,cardholders,cardID);
+                if(search(cardholders, cardID) != nullptr)
+                {
+                  searchRentalsPerson(books,cardID);
+                }
                 break;
 
             case 6:
@@ -403,6 +451,7 @@ int main()
 
             case 8:
                 // Must update records in files here before exiting the program
+                updateRecords(cardholders,books);
                 break;
 
             default:
